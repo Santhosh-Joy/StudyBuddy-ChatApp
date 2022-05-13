@@ -27,7 +27,7 @@ def loginPage(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
         try:
-            user = User.objects.get(username=username).lower()
+            user = User.objects.get(username=username)
         except:
             messages.error(request, 'User doesnot exist')
 
@@ -111,7 +111,9 @@ def createRoom(request):
     if request.method == 'POST':
         form = RoomForm(request.POST)
         if form.is_valid():
-            form.save()
+            room = form.save(commit=False)
+            room.host = request.user
+            room.save()
             return redirect('home')
     context = {'form':form}
     return render(request, 'base/room_form.html',context)
